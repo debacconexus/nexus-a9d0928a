@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Response Coordination System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #07192f 0%, #0a1e35 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(51, 224, 196, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #33e0c4;
+        }
+
+        .igm-status {
+            background: linear-gradient(45deg, #33e0c4, #ffca58);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #07192f;
+            font-size: 0.9rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(51, 224, 196, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: rgba(51, 224, 196, 0.2);
+            border-color: #33e0c4;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 224, 196, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #33e0c4;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffca58;
+            margin: 0.5rem 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(51, 224, 196, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .form-section h3 {
+            color: #33e0c4;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #33e0c4;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(51, 224, 196, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #33e0c4;
+            box-shadow: 0 0 0 2px rgba(51, 224, 196, 0.2);
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, #33e0c4, #ffca58);
+            border: none;
+            border-radius: 8px;
+            color: #07192f;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .contact-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #33e0c4;
+        }
+
+        .contact-item .time {
+            color: #ffca58;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .contact-item .agency {
+            color: #33e0c4;
+            font-weight: 600;
+            margin: 0.25rem 0;
+        }
+
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(51, 224, 196, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-filters select {
+            padding: 0.6rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(51, 224, 196, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .incident-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .incident-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(51, 224, 196, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .incident-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .incident-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .incident-id {
+            color: #ffca58;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .incident-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(255, 202, 88, 0.2);
+            color: #ffca58;
+        }
+
+        .status-resolved {
+            background: rgba(51, 224, 196, 0.2);
+            color: #33e0c4;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(51, 224, 196, 0.3);
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links span {
+            color: #33e0c4;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .dashboard-grid, .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">DRCS - Disaster Response Coordination System</div>
+            <div class="igm-status">IGM Status: ACTIVE</div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <div class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</div>
+        <div class="nav-tab" onclick="switchTab('intake')">Incident Intake</div>
+        <div class="nav-tab" onclick="switchTab('contact')">Contact Log</div>
+        <div class="nav-tab" onclick="switchTab('search')">Search & Analytics</div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>Active Incidents</h3>
+                    <div class="stat-number">23</div>
+                    <p>Multi-agency responses in progress</p>
+                </div>
+                <div class="card">
+                    <h3>Resources Deployed</h3>
+                    <div class="stat-number">156</div>
+                    <p>Personnel and equipment units</p>
+                </div>
+                <div class="card">
+                    <h3>Cross-Border Operations</h3>
+                    <div class="stat-number">7</div>
+                    <p>International coordination efforts</p>
+                </div>
+                <div class="card">
+                    <h3>Chain of Custody Records</h3>
+                    <div class="stat-number">342</div>
+                    <p>Verified resource transfers</p>
+                </div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="card">
+                    <h3>Recent Incidents</h3>
+                    <div class="incident-list">
+                        <div class="incident-item">
+                            <div class="incident-header">
+                                <div class="incident-id">INC-2024-001</div>
+                                <div class="incident-status status-active">ACTIVE</div>
+                            </div>
+                            <p><strong>Type:</strong> Wildfire</p>
+                            <p><strong>Location:</strong> Northern California</p>
+                            <p><strong>Agencies:</strong> CAL FIRE, FEMA, Red Cross</p>
+                        </div>
+                        <div class="incident-item">
+                            <div class="incident-header">
+                                <div class="incident-id">INC-2024-002</div>
+                                <div class="incident-status status-resolved">RESOLVED</div>
+                            </div>
+                            <p><strong>Type:</strong> Flood</p>
+                            <p><strong>Location:</strong> Houston, TX</p>
+                            <p><strong>Agencies:</strong> FEMA, Coast Guard, Local EMS</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Resource Availability</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Emergency Vehicles:</strong> 45 Available
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Medical Personnel:</strong> 78 On-Call
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Search & Rescue Teams:</strong> 12 Deployed
+                    </div>
+                    <div>
+                        <strong>Supply Centers:</strong> 8 Operational
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Intake Form Tab -->
+        <div id="intake" class="tab-content">
+            <div class="form-grid">
+                <div class="form-section">
+                    <h3>Incident Information</h3>
+                    <div class="form-group">
+                        <label for="incidentType">Incident Type</label>
+                        <select id="incidentType">
+                            <option value="">Select incident type...</option>
+                            <option value="wildfire">Wildfire</option>
+                            <option value="flood">Flood</option>
+                            <option value="earthquake">Earthquake</option>
+                            <option value="hurricane">Hurricane</option>
+                            <option value="hazmat">Hazardous Material</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" placeholder="Enter incident location...">
+                    </div>
+                    <div class="form-group">
+                        <label for="severity">Severity Level</label>
+                        <select id="severity">
+                            <option value="">Select severity...</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Incident Description</label>
+                        <textarea id="description" rows="4" placeholder="Provide detailed description of the incident..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Agency Coordination</h3>
+                    <div class="form-group">
+                        <label for="leadAgency">Lead Agency</label>
+                        <select id="leadAgency">
+                            <option value="">Select lead agency...</option>
+                            <option value="fema">FEMA</option>
+                            <option value="calfire">CAL FIRE</option>
+                            <option value="coastguard">Coast Guard</option>
+                            <option value="redcross">Red Cross</option>
+                            <option value="local">Local Emergency Services</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="supportingAgencies">Supporting Agencies</label>
+                        <input type="text" id="supportingAgencies" placeholder="List supporting agencies...">
+                    </div>
+                    <div class="form-group">
+                        <label for="crossBorder">Cross-Border Coordination</label>
+                        <select id="crossBorder">
+                            <option value="no">No</option>
+                            <option value="state">State-to-State</option>
+                            <option value="federal">Federal</option>
+                            <option value="international">International</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="commandCenter">Command Center Location</label>
+                        <input type="text" id="commandCenter" placeholder="Enter command center location...">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Resource Deployment</h3>
+                    <div class="form-group">
+                        <label for="personnelRequired">Personnel Required</label>
+                        <input type="number" id="personnelRequired" placeholder="Number of personnel needed...">
+                    </div>
+                    <div class="form-group">
+                        <label for="equipmentNeeded">Equipment Needed</label>
+                        <textarea id="equipmentNeeded" rows="3" placeholder="List required equipment and resources..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="deploymentTime">Expected Deployment Time</label>
+                        <input type="datetime-local" id="deploymentTime">
+                    </div>
+                    <div class="form-group">
+                        <label for="custodyOfficer">Chain of Custody Officer</label>
+                        <input type="text" id="custodyOfficer" placeholder="Name of responsible officer...">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Submit Incident Report</h3>
+                    <div class="form-group">
+                        <label for="reporterName">Reporter Name</label>
